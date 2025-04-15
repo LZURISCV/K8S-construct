@@ -130,7 +130,7 @@ spec:
       labels:
         k8s-app: metrics-server
     spec:
-      hostNetwork:true
+      hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - args:
