@@ -737,6 +737,11 @@ echo "[+] 开放 10250/tcp 端口..."
 sudo firewall-cmd --zone=public --add-port=10250/tcp --permanent
 sudo firewall-cmd --reload
 
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent
+sudo firewall-cmd --reload
+sudo firewall-cmd --zone=public --add-port=4443/tcp --permanent
+sudo firewall-cmd --reload
+
 # 创建 kubeconfig 文件
 echo "[+] 创建 k8snode1 的 kubeconfig 配置文件..."
 
