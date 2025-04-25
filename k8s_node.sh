@@ -79,9 +79,6 @@ sudo firewall-cmd --reload
 # 创建所需目录
 sudo mkdir -p /etc/etcd /var/lib/etcd
 
-# 拷贝证书（假设在当前目录）
-sudo cp ca.pem etcd.pem etcd-key.pem /etc/etcd/
-
 # 创建 etcd.conf
 cat <<EOF | sudo tee /etc/etcd/etcd.conf
 ETCD_NAME=$ETCD_NAME
