@@ -74,6 +74,8 @@ sudo dnf install -y etcd
 # 开启 etcd 所需端口
 sudo firewall-cmd --zone=public --add-port=2379/tcp --permanent
 sudo firewall-cmd --zone=public --add-port=2380/tcp --permanent
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent
+sudo firewall-cmd --zone=public --add-port=4443/tcp --permanent
 sudo firewall-cmd --reload
 
 # 创建所需目录
