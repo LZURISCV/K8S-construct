@@ -786,35 +786,30 @@ kubectl config set-context default \
 
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 
-# 传输配置文件到 node 节点
-echo "[+] 正在传输配置文件到 node 节点 $NODE_IP..."
-
-scp -r /etc/kubernetes/pki ${NODE_USER}@${NODE_IP}:/etc/kubernetes/
-scp -r /root/k8snode1.kubeconfig ${NODE_USER}@${NODE_IP}:/etc/kubernetes/pki/
-scp -r /root/kube-proxy.kubeconfig ${NODE_USER}@${NODE_IP}:/etc/kubernetes/pki/
-
-echo "[+] 配置文件已传输到 node 节点 $NODE_IP。"
-
-echo "复制etcd证书到node节点"
-echo "请输入 node 节点的 IP 地址："
-read NODE_IP
-
-# 远程 node 用户
+read -p "请输入 node 节点的 IP 地址: " NODE_IP
 NODE_USER=root
 
-# 本地证书路径
-CERT_DIR=/root
+# 使用主目录
+CERT_DIR="$HOME"
+LOCAL_K8S_PKI_DIR="/etc/kubernetes/pki"
+K8S_NODE_KUBECONFIG="$HOME/k8snode1.kubeconfig"
+KUBE_PROXY_KUBECONFIG="$HOME/kube-proxy.kubeconfig"
 
-# 远程路径
+REMOTE_K8S_DIR=/etc/kubernetes
 REMOTE_ETCD_DIR=/etc/etcd
 REMOTE_DATA_DIR=/var/lib/etcd
 
 echo "[+] 正在创建 node 节点目录..."
-ssh ${NODE_USER}@${NODE_IP} "mkdir -p ${REMOTE_ETCD_DIR} ${REMOTE_DATA_DIR}"
+ssh ${NODE_USER}@${NODE_IP} "mkdir -p ${REMOTE_K8S_DIR}/pki ${REMOTE_ETCD_DIR} ${REMOTE_DATA_DIR}"
 
-echo "[+] 正在复制 etcd 证书到 node 节点..."
-scp ${CERT_DIR}/ca.pem ${NODE_USER}@${NODE_IP}:${REMOTE_ETCD_DIR}/
-scp ${CERT_DIR}/etcd.pem ${NODE_USER}@${NODE_IP}:${REMOTE_ETCD_DIR}/
-scp ${CERT_DIR}/etcd-key.pem ${NODE_USER}@${NODE_IP}:${REMOTE_ETCD_DIR}/
+echo "[+] 正在传输 Kubernetes 配置文件..."
+scp -r "${LOCAL_K8S_PKI_DIR}" "${NODE_USER}@${NODE_IP}:${REMOTE_K8S_DIR}/"
+scp "${K8S_NODE_KUBECONFIG}" "${NODE_USER}@${NODE_IP}:${REMOTE_K8S_DIR}/pki/"
+scp "${KUBE_PROXY_KUBECONFIG}" "${NODE_USER}@${NODE_IP}:${REMOTE_K8S_DIR}/pki/"
 
-echo "[√] etcd 证书成功复制并配置到 node 节点 ${NODE_IP}"
+echo "[+] 正在传输 etcd 证书..."
+scp "${CERT_DIR}/ca.pem" "${NODE_USER}@${NODE_IP}:${REMOTE_ETCD_DIR}/"
+scp "${CERT_DIR}/etcd.pem" "${NODE_USER}@${NODE_IP}:${REMOTE_ETCD_DIR}/"
+scp "${CERT_DIR}/etcd-key.pem" "${NODE_USER}@${NODE_IP}:${REMOTE_ETCD_DIR}/"
+
+echo "[√] 所有配置文件已成功传输到 node 节点 $NODE_IP"
