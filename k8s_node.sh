@@ -7,7 +7,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # 获取当前主机 IP
-MY_IP=$(ip route get 1 | awk '{print $7; exit}')
+read -p "请输入当前主机ip: " MY_IP
 echo "当前主机 IP 检测为: $MY_IP"
 
 # 获取当前主机名（或让用户手动输入）
@@ -61,11 +61,10 @@ systemctl enable --now containerd
 echo "✅ 初始化完成，建议执行 reboot 进行重启"
 
 
-自动检测当前主机IP（非 127.0.0.1 的第一个）
-CURRENT_IP=$(ip addr show | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -n1)
+
 ETCD_NAME=$(hostname)  # 使用主机名作为 etcd 名字
 
-echo "当前主机 IP 为: $CURRENT_IP"
+echo "当前主机 IP 为: $MY_IP"
 echo "使用 etcd 名字: $ETCD_NAME"
 
 # 安装 etcd
@@ -108,12 +107,12 @@ ExecStart=/usr/bin/etcd \\
   --peer-trusted-ca-file=/etc/etcd/ca.pem \\
   --peer-client-cert-auth \\
   --client-cert-auth \\
-  --initial-advertise-peer-urls https://$CURRENT_IP:2380 \\
-  --listen-peer-urls https://$CURRENT_IP:2380 \\
-  --listen-client-urls https://$CURRENT_IP:2379,https://127.0.0.1:2379 \\
-  --advertise-client-urls https://$CURRENT_IP:2379 \\
+  --initial-advertise-peer-urls https://$MY_IP:2380 \\
+  --listen-peer-urls https://$MY_IP:2380 \\
+  --listen-client-urls https://$MY_IP:2379,https://127.0.0.1:2379 \\
+  --advertise-client-urls https://$MY_IP:2379 \\
   --initial-cluster-token etcd-cluster-0 \\
-  --initial-cluster $ETCD_NAME=https://$CURRENT_IP:2380 \\
+  --initial-cluster $ETCD_NAME=https://$MY_IP:2380 \\
   --initial-cluster-state new \\
   --data-dir /var/lib/etcd
 Restart=always
