@@ -444,7 +444,6 @@ else
     echo "[√] kubernetes-master 已安装，跳过安装步骤"
 fi
 
-MASTER_IP=$(ip route get 1 | awk '{print $7; exit}')
 CLUSTER_NAME="eulixos-k8s"
 CERT_DIR="/etc/kubernetes/pki"
 KUBECONFIG_DIR="/etc/kubernetes/pki"
