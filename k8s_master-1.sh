@@ -3,7 +3,7 @@ set -euo pipefail
 trap 'echo "❌ 脚本失败，出错行：$LINENO，退出码：$?"' ERR
 
 # 让用户分别输入节点 IP 和主机名
-read -p "请输入其他节点 IP: " MASTER_IP
+read -p "请输入本节点 IP: " MASTER_IP
 read -p "请输入当前主机名（例如 k8smaster 或 k8snode1）: " MY_HOSTNAME
 hostnamectl set-hostname "$MY_HOSTNAME"
 
